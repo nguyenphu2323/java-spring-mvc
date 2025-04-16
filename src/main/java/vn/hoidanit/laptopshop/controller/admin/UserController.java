@@ -2,21 +2,22 @@ package vn.hoidanit.laptopshop.controller.admin;
 
 import java.util.List;
 
-import org.eclipse.tags.shaded.org.apache.xpath.operations.Mod;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import vn.hoidanit.laptopshop.domain.User;
+import vn.hoidanit.laptopshop.service.UploadService;
 import vn.hoidanit.laptopshop.service.UserService;
-import org.springframework.web.bind.annotation.RequestMethod;
+
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 // @Controller
 // public class UserController {
@@ -29,21 +30,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Controller
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
+    private final UploadService uploadService;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UploadService uploadService,
+            PasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.uploadService = uploadService;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    @GetMapping("/")
-    public String getHomePage(Model model) {
-        List<User> arrUser = this.userService.getUserByEmailAndAddress("");
-        System.out.println(arrUser);
+    // @GetMapping("/")
+    // public String getHomePage(Model model) {
+    // List<User> arrUser = this.userService.getUserByEmailAndAddress("");
+    // System.out.println(arrUser);
 
-        model.addAttribute("arrUser", arrUser);
-        model.addAttribute("hoidanit", "from controller with model");
-        return "Hello";
-    }
+    // model.addAttribute("arrUser", arrUser);
+    // model.addAttribute("hoidanit", "from controller with model");
+    // return "Hello";
+    // }
 
     @RequestMapping("/admin/user")
     public String getUserPage(Model model) {
@@ -60,14 +66,23 @@ public class UserController {
         return "admin/user/detail";
     }
 
-    @RequestMapping("admin/user/create")
+    @GetMapping("admin/user/create")
     public String getUserCreatePage(Model model) {
         model.addAttribute("newUser", new User());
         return "admin/user/create";
     }
 
-    @RequestMapping(value = "admin/user/create", method = RequestMethod.POST)
-    public String createUserPage(Model modelm, @ModelAttribute("newUser") User phu) {
+    @PostMapping(value = "admin/user/create")
+    public String createUserPage(Model modelm, @ModelAttribute("newUser") User phu,
+            @RequestParam("hoidanitFile") MultipartFile file) {
+
+        String avatar = this.uploadService.handleSaveUploadFile(file, "avatar");
+        String hashPassword = this.passwordEncoder.encode(phu.getPassword());
+
+        phu.setAvatar(avatar);
+        phu.setPassword(hashPassword);
+        phu.setRole(this.userService.getRoleByName(phu.getRole().getName()));
+        // save
         this.userService.handleSaveUser(phu);
         return "redirect:/admin/user";
     }
@@ -80,14 +95,16 @@ public class UserController {
     }
 
     @PostMapping("admin/user/update")
-    public String postUpdateUser(Model model, @ModelAttribute("newUser") User phu) {
+    public String postUpdateUser(Model model, @ModelAttribute("newUser") User phu,
+            @RequestParam("phu") MultipartFile file) {
         User currentUser = this.userService.getUserByID(phu.getId());
-
+        String avatar = this.uploadService.handleSaveUploadFile(file, "avatar");
         if (currentUser != null) {
             currentUser.setFullName(phu.getFullName());
             currentUser.setAddress(phu.getAddress());
             currentUser.setPhone(phu.getPhone());
-
+            currentUser.setRole(this.userService.getRoleByName(phu.getRole().getName()));
+            currentUser.setAvatar(avatar);
             this.userService.handleSaveUser(currentUser);
 
         }
