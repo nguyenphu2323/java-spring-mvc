@@ -31,6 +31,9 @@
                                             <div class="card-body">
                                                 <form:form method="post" action="/register"
                                                     modelAttribute="registerUser">
+                                                    <c:set var="errorsFirstName">
+                                                        <form:errors path="firstName" cssClass="invalid-feedback" />
+                                                    </c:set>
                                                     <c:set var="errorsPassword">
                                                         <form:errors path="confirmPassword"
                                                             cssClass="invalid-feedback" />
@@ -41,9 +44,12 @@
                                                     <div class="row mb-3">
                                                         <div class="col-md-6">
                                                             <div class="form-floating mb-3 mb-md-0">
-                                                                <form:input class="form-control" id="inputFirstName"
-                                                                    type="text" placeholder="Enter your first name"
+                                                                <form:input
+                                                                    class="form-control ${not empty errorsFirstName ? 'is-invalid' : ''}"
+                                                                    id="inputFirstName" type="text"
+                                                                    placeholder="Enter your first name"
                                                                     path="firstName" />
+                                                                ${errorsFirstName}
                                                                 <label for="inputFirstName">First name</label>
                                                             </div>
                                                         </div>
@@ -99,7 +105,7 @@
 
                                             </div>
                                             <div class="card-footer text-center py-3">
-                                                <div class="small"><a href="login.html">Have an account? Go to login</a>
+                                                <div class="small"><a href="/login">Have an account? Go to login</a>
                                                 </div>
                                             </div>
                                         </div>

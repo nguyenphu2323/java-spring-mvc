@@ -86,7 +86,7 @@ public class ProductController {
     public String getProductUpdatePage(Model model, @PathVariable long id) {
         Optional<Product> currentProduct = this.productService.getProductByID(id);
         model.addAttribute("newProduct", currentProduct.get());
-        return "/admin/product/update";
+        return "admin/product/update";
     }
 
     @PostMapping("/admin/product/update")
