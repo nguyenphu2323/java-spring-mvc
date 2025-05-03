@@ -1,7 +1,11 @@
 package vn.hoidanit.laptopshop.controller.admin;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -55,9 +59,23 @@ public class UserController {
     // }
 
     @RequestMapping("/admin/user")
-    public String getUserPage(Model model) {
-        List<User> users = this.userService.getAllUser();
+    public String getUserPage(Model model, @RequestParam("page") Optional<String> pageOptional) {
+        int page = 1;
+        try {
+            if (pageOptional.isPresent()) {
+                page = Integer.parseInt(pageOptional.get());
+            } else {
+
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        Pageable pageable = PageRequest.of(page - 1, 2);
+        Page<User> pageUser = this.userService.getAllUser(pageable);
+        List<User> users = pageUser.getContent();
         model.addAttribute("users", users);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pageUser.getTotalPages());// tổng số trang
         return "admin/user/show";
     }
 

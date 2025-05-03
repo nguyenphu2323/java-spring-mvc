@@ -66,7 +66,8 @@ public class SecurityConfiguration {
                         )
                         .permitAll()
 
-                        .requestMatchers("/", "/product/**", "/login", "/client/**", "/css/**", "/js/**", "/images/**")
+                        .requestMatchers("/", "/product/**", "/login", "/client/**", "/css/**", "/js/**", "/images/**",
+                                "/register")
                         .permitAll()// Tất
                         // cả
                         // đường

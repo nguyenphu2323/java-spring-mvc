@@ -66,7 +66,7 @@
                                             <th scope="col">Giá cả</th>
                                             <th scope="col">Số lượng</th>
                                             <th scope="col">Thành tiền</th>
-                                            <th scope="col">Xử lý</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -95,27 +95,10 @@
                                                         </p>
                                                     </td>
                                                     <td>
-                                                        <div class="input-group quantity mt-4" style="width: 100px;">
-                                                            <div class="input-group-btn">
-                                                                <button
-                                                                    class="btn btn-sm btn-minus rounded-circle bg-light border">
-                                                                    <i class="fa fa-minus"></i>
-                                                                </button>
-                                                            </div>
-                                                            <input type="text"
-                                                                class="form-control form-control-sm text-center border-0"
-                                                                value="${cartDetails.quantity}"
-                                                                data-cart-detail-id="${cartDetails.id}"
-                                                                data-cart-detail-price="${cartDetails.price}"
-                                                                data-cart-detail-index="${status.index}">
+                                                        <p class="mb-0 mt-4">
+                                                            ${cartDetails.quantity}
+                                                        </p>
 
-                                                            <div class="input-group-btn">
-                                                                <button
-                                                                    class="btn btn-sm btn-plus rounded-circle bg-light border">
-                                                                    <i class="fa fa-plus"></i>
-                                                                </button>
-                                                            </div>
-                                                        </div>
                                                     </td>
                                                     <td>
                                                         <p class="mb-0 mt-4" data-cart-detail-id="${cartDetails.id}">
@@ -123,18 +106,7 @@
                                                                 value="${cartDetails.price * cartDetails.quantity}" />đ
                                                         </p>
                                                     </td>
-                                                    <td>
-                                                        <form method="post"
-                                                            action="/delete-cart-product/${cartDetails.id}">
-                                                            <input type="hidden" name="${_csrf.parameterName}"
-                                                                value="${_csrf.token}" />
-                                                            <button
-                                                                class="btn btn-md rounded-circle bg-light border mt-4"
-                                                                type="submit">
-                                                                <i class="fa fa-times text-danger"></i>
-                                                            </button>
-                                                        </form>
-                                                    </td>
+
                                                 </tr>
                                             </c:forEach>
                                         </c:if>
@@ -146,66 +118,69 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <c:if test="${not empty cartDetails}">
+                                <form:form action="/place-order" method="post" modelAttribute="cart">
+                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 
-                            <div class="mt-5 row g-4 justify-content-start">
-                                <div class="col-12 col-md-8">
-                                    <div class="bg-light rounded">
-                                        <div class="p-4">
-                                            <h1 class="display-6 mb-4">Thông tin <span class="fw-normal">Đơn hàng</span>
-                                            </h1>
-                                            <div class="d-flex justify-content-between mb-4">
-                                                <h5 class="mb-0 me-4">Tạm tính:</h5>
-                                                <p class="mb-0" data-cart-total-price="${totalPrice}">
-                                                    <fmt:formatNumber type="number" value="${totalPrice}" />đ
-                                                </p>
-                                            </div>
-                                            <div class="d-flex justify-content-between">
-                                                <h5 class="mb-0 me-4">Phí vận chuyển</h5>
-                                                <div>
-                                                    <p class="mb-0">0đ</p>
+                                    <div class="mt-5 row g-4">
+                                        <!-- Cột: Thông tin người nhận -->
+                                        <div class="col-12 col-md-6">
+                                            <div class="p-4">
+                                                <h5>Thông tin người nhận</h5>
+                                                <div class="row">
+                                                    <div class="col-12 form-group mb-3">
+                                                        <label>Tên người nhận:</label>
+                                                        <input class="form-control" name="receiverName" required>
+                                                    </div>
+                                                    <div class="col-12 form-group mb-3">
+                                                        <label>Địa chỉ người nhận:</label>
+                                                        <input class="form-control" name="receiverAddress" required>
+                                                    </div>
+                                                    <div class="col-12 form-group mb-3">
+                                                        <label>Số điện thoại:</label>
+                                                        <input class="form-control" name="receiverPhone" required>
+                                                    </div>
+                                                    <div class="mt-4">
+                                                        <i class="fas fa-arrow-left"></i>
+                                                        <a href="/cart">Quay lại giỏ hàng</a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
-                                            <h5 class="mb-0 ps-4 me-4">Tổng số tiền:</h5>
-                                            <p class="mb-0 pe-4" data-cart-total-price="${totalPrice}">
-                                                <fmt:formatNumber type="number" value="${totalPrice}" />đ
-                                            </p>
-                                        </div>
 
-                                        <form:form action="/confirm-checkout" method="post" modelAttribute="cart">
-                                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-                                            <div style="display: none;">
-
-                                                <c:forEach var="cartDetail" items="${cart.cartDetails}"
-                                                    varStatus="status">
-                                                    <div class="mb-3">
-                                                        <div class="form-group">
-                                                            <label>Id:</label>
-                                                            <form:input class="form-control" type="text"
-                                                                value="${cartDetail.id}"
-                                                                path="cartDetails[${status.index}].id" />
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label>Quantity:</label>
-                                                            <form:input class="form-control" type="text"
-                                                                value="${cartDetail.quantity}"
-                                                                path="cartDetails[${status.index}].quantity" />
-                                                        </div>
+                                        <!-- Cột: Thông tin thanh toán -->
+                                        <div class="col-12 col-md-6">
+                                            <div class="bg-light rounded">
+                                                <div class="p-4">
+                                                    <h1 class="display-6 mb-4">Thông tin <span class="fw-normal">Thanh
+                                                            Toán</span></h1>
+                                                    <div class="d-flex justify-content-between mb-4">
+                                                        <h5 class="mb-0 me-4">Phí vận chuyển</h5>
+                                                        <p class="mb-0">0đ</p>
                                                     </div>
-                                                </c:forEach>
-
-
+                                                    <div class="d-flex justify-content-between">
+                                                        <h5 class="mb-0 me-4">Hình thức</h5>
+                                                        <p class="mb-0">Thanh toán khi nhận hàng (COD)</p>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
+                                                    <h5 class="mb-0 ps-4 me-4">Tổng số tiền:</h5>
+                                                    <p class="mb-0 pe-4" data-cart-total-price="${totalPrice}">
+                                                        <fmt:formatNumber type="number" value="${totalPrice}" />đ
+                                                    </p>
+                                                </div>
                                             </div>
                                             <button type="submit"
-                                                class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4">Tiến
-                                                hành thanh
+                                                class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4">Thanh
                                                 toán</button>
-                                        </form:form>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
+                                </form:form>
+                            </c:if>
+
                         </div>
+                    </div>
                     </div>
                     <!-- Cart Page End -->
 
