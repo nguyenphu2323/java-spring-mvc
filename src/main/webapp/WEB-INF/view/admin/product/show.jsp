@@ -68,6 +68,8 @@
                                             </tbody>
                                         </table>
                                         <nav aria-label="Page navigation example">
+
+
                                             <ul class="pagination justify-content-center">
                                                 <li class="page-item">
                                                     <a class="${1 eq currentPage ? 'disabled page-link' : 'page-link'}"
@@ -79,7 +81,8 @@
                                                 <c:forEach begin="0" end="${totalPages - 1}" varStatus="loop">
                                                     <li class="page-item"><a
                                                             class="${(loop.index + 1) eq currentPage ? 'active page-link' : 'page-link'} "
-                                                            href="/admin/product?page=${loop.index + 1}">${loop.index +
+                                                            href="/admin/product?page=${loop.index + 1}">${loop.index
+                                                            +
                                                             1}</a></li>
                                                 </c:forEach>
 
@@ -90,7 +93,10 @@
                                                     </a>
                                                 </li>
                                             </ul>
+
+
                                         </nav>
+
                                     </div>
 
                                 </div>
